@@ -1,6 +1,7 @@
 #key libraries for the program
 import string
 import random
+from cryptography.fernet import Fernet
 
 #class creates all the random passwords
 class passwordManager:
@@ -9,23 +10,40 @@ class passwordManager:
         self.number = number
         self.symbol = symbol
         self.password = password
+
     def textResult(self, length):
         for characters in range(length):
             value = random.randint(0, 51)
             self.password += self.text[value]
         print(self.password)
+        confirm()
+
     def textNumResult(self, length):
         textNum = self.text + self.number
         for characters in range(length):
             value = random.randint(0, 61)
             self.password += textNum[value]
         print(self.password)
+        confirm()
+        
     def textNumSymResult(self, length):
         textNumSym = self.text + self.number + self.symbol
         for characters in range(length):
             value = random.randint(0, 93)
             self.password += textNumSym[value]
         print(self.password)
+        confirm()
+#class that creates files that hold the password
+class files(passwordManager):
+    def __init__(self, title,passwordManager):
+        self.title = title
+        self.password = passwordManager.password
+    
+    def newFile(self):
+        f = open(self.title, 'w+')
+        f.write(self.password)
+        f.close()
+        print("password saved")
 
             
 
@@ -54,6 +72,7 @@ def generator():
     print("1. text")
     print("2. text and numbers")
     print("3. text, numbers, and symbols")
+    print("4. quit")
     print()
     container = input("Choose what the password should include ==> ")
     if container == "1":
@@ -62,5 +81,18 @@ def generator():
         newPassword.textNumResult(length)
     if container == "3":
         newPassword.textNumSymResult(length)
+    if container == "4":
+        quit()
+#checks with the user before pushing password into file and gives the file a name 
+def confirm():
+    approval = input("Are u happy with this password ==> ")
+    if approval == 'y' or 'yes':
+        createTitle = input("What is the use for this password ==> ")
+        createTitle += ".txt"
+        createFile = files(createTitle, newPassword)
+        createFile.newFile()
+    elif approval == 'n' or 'no':
+        pass
+
 
 Main()
