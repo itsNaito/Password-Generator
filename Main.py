@@ -45,11 +45,26 @@ class files(passwordManager):
         f.close()
         print("password saved")
 
-            
+#testing encryption and decryption to use for the project in the next build
+def testing():
+    key = Fernet.generate_key()
+    print(key)
+    f = open("secret.key","wb")
+    f.write(key)
+    f.close()
+    f = open("secret.key","rb")
+    key = f.read()
+    f.close()
+    message = "My name is Barry Allen and I am the fastest man alive!!".encode()
+    f = Fernet(key)
+    encrypt = f.encrypt(message)
+    print(encrypt)
+    decrypt = f.decrypt(encrypt)
+    print(decrypt)
 
+testing()
 #declaration of values in the class
 newPassword = passwordManager(string.ascii_uppercase + string.ascii_lowercase, string.digits,  string.punctuation, "")
-
 #start menu
 def Main():
     print("1. Create New password")
