@@ -1,6 +1,8 @@
 #key libraries for the program
 import string
 import random
+import os.path
+from os import path
 from cryptography.fernet import Fernet
 
 #class creates all the random passwords
@@ -45,26 +47,37 @@ class files(passwordManager):
         f.close()
         print("password saved")
 
-#testing encryption and decryption to use for the project in the next build
-def testing():
-    key = Fernet.generate_key()
-    print(key)
-    f = open("secret.key","wb")
-    f.write(key)
-    f.close()
-    f = open("secret.key","rb")
-    key = f.read()
-    f.close()
-    message = "My name is Barry Allen and I am the fastest man alive!!".encode()
-    f = Fernet(key)
-    encrypt = f.encrypt(message)
-    print(encrypt)
-    decrypt = f.decrypt(encrypt)
-    print(decrypt)
+#used to handle on the encryption and decryption
+class crypting():
+    def __init__(self,files,passwordManager):
+        self.title = files.title
+        self.password = passwordManager.password
+        pass
 
-testing()
+    def openKey(self):
+        spawn = path.exists("secret.key")
+        if spawn == False:
+            key = Fernet.generate_key()
+            f = open("secret.key","wb")
+            f.write(key)
+            f.close()
+            crypting.encrypting(self)
+    
+    def encrypting(self):
+        f = open("secret.key","rb")
+        key = f.read()
+        f.close()
+        ##
+        currentPassword = self.password.encode()
+        f = Fernet(key)
+        encryptPassword = f.encrypt(currentPassword)
+        print(encryptPassword)
+
+
+
 #declaration of values in the class
 newPassword = passwordManager(string.ascii_uppercase + string.ascii_lowercase, string.digits,  string.punctuation, "")
+
 #start menu
 def Main():
     print("1. Create New password")
@@ -105,7 +118,8 @@ def confirm():
         createTitle = input("What is the use for this password ==> ")
         createTitle += ".txt"
         createFile = files(createTitle, newPassword)
-        createFile.newFile()
+        newCryption = crypting(createFile, newPassword) 
+        newCryption.openKey()
     elif approval == 'n' or 'no':
         pass
 
