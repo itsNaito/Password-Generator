@@ -35,22 +35,11 @@ class passwordManager:
             self.password += textNumSym[value]
         print(self.password)
         confirm()
-#class that creates files that hold the password
-class files(passwordManager):
-    def __init__(self, title,passwordManager):
-        self.title = title
-        self.password = passwordManager.password
-    
-    def newFile(self):
-        f = open(self.title, 'w+')
-        f.write(self.password)
-        f.close()
-        print("password saved")
 
 #used to handle on the encryption and decryption
 class crypting():
-    def __init__(self,files,passwordManager):
-        self.title = files.title
+    def __init__(self,title,passwordManager):
+        self.title = title
         self.password = passwordManager.password
         pass
 
@@ -62,6 +51,8 @@ class crypting():
             f.write(key)
             f.close()
             crypting.encrypting(self)
+        if spawn == True:
+            crypting.encrypting(self)
     
     def encrypting(self):
         f = open("secret.key","rb")
@@ -71,13 +62,25 @@ class crypting():
         currentPassword = self.password.encode()
         f = Fernet(key)
         encryptPassword = f.encrypt(currentPassword)
-        print(encryptPassword)
+        store = open(self.title, "wb")
+        store.write(encryptPassword)
+        store.close()
+        print("Password secured")
+        Main()
 
-
+    @staticmethod
+    def decrypting(showpassword):
+        fileKey = open("secret.key", "rb").read()
+        key = fileKey
+        f = open(showpassword,"rb").read()
+        hiddenPassword = f
+        fernet = Fernet(key)
+        openPassword = fernet.decrypt(hiddenPassword)
+        print(openPassword)
+        Main()
 
 #declaration of values in the class
 newPassword = passwordManager(string.ascii_uppercase + string.ascii_lowercase, string.digits,  string.punctuation, "")
-
 #start menu
 def Main():
     print("1. Create New password")
@@ -87,7 +90,12 @@ def Main():
     if option == "1":
         generator()
     if option == "2":
-        pass
+        test = os.listdir()
+        print(test)
+        print()
+        showPassword = input("Which password would you like(don't need the .txt) ==> ")
+        showPassword+= ".txt"
+        crypting.decrypting(showPassword)
     if option == "3":
         quit()
 
@@ -117,8 +125,7 @@ def confirm():
     if approval == 'y' or 'yes':
         createTitle = input("What is the use for this password ==> ")
         createTitle += ".txt"
-        createFile = files(createTitle, newPassword)
-        newCryption = crypting(createFile, newPassword) 
+        newCryption = crypting(createTitle, newPassword) 
         newCryption.openKey()
     elif approval == 'n' or 'no':
         pass
